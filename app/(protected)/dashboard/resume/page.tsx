@@ -1,10 +1,5 @@
 import { UserProfile } from "@/action/user-profile";
-import { getResumes } from "@/modules/dashboard/action/get-resumes";
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
+
 import dynamic from "next/dynamic";
 
 const UserResumes = dynamic(() =>
@@ -16,17 +11,10 @@ const UserResumes = dynamic(() =>
 export default async function Resume() {
   // const resumesPromise = getResumes(user?.uid as string);
   const user = await UserProfile();
-  const queryClient = new QueryClient();
-  await queryClient.prefetchQuery({
-    queryKey: ["resumes", user?.uid as string],
-    queryFn: () => getResumes(user?.uid as string),
-  });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="w-full h-full">
-        <UserResumes userId={user?.uid as string} />
-      </div>
-    </HydrationBoundary>
+    <div className="w-full h-full">
+      <UserResumes userId={user?.uid as string} />
+    </div>
   );
 }

@@ -1,10 +1,7 @@
-import { getUserOptimziedResume } from "@/action/optimizer";
 import { ResumeReport } from "@/modules/dashboard/components/resume-optimizer/components/report";
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
+import { UserOptimizedResumeQueryType } from "@/types/optimizer";
+
+import { queryClientServerObject } from "../../layout";
 
 export default async function OptimizedResume({
   params,
@@ -14,18 +11,21 @@ export default async function OptimizedResume({
   const { resumeId } = await params;
   if (!resumeId) return;
 
-  const queryClient = new QueryClient();
+  const queryClient = queryClientServerObject.getClient();
+  const data = queryClient.getQueryData<UserOptimizedResumeQueryType>([
+    "optimized-resume",
+  ]);
 
-  await queryClient.prefetchQuery({
-    queryKey: ["optimised-resume", resumeId],
-    queryFn: async () => {
-      return getUserOptimziedResume(resumeId);
-    },
-  });
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ResumeReport resumeId={resumeId} />
-    </HydrationBoundary>
+  const optimizedResumeData = data?.optimizedResumes?.find(
+    (resume) => resume.id === resumeId,
   );
+
+  // await queryClient.prefetchQuery({
+  //   queryKey: ["optimised-resume", resumeId],
+  //   queryFn: async () => {
+  //     return getUserOptimziedResume(resumeId);
+  //   },
+  // });
+
+  return <ResumeReport optimizedResumeData={optimizedResumeData} />;
 }

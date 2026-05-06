@@ -1,10 +1,9 @@
 "use client";
 
-import { getUserOptimziedResume } from "@/action/optimizer";
-import { ContainerWithSpinner } from "@/components/common/container-with-spinner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { OptimizedResumeType } from "@/types/optimizer";
+
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -14,25 +13,29 @@ const borderColorMap = {
   OPTIONAL: "border-neon-orange",
 };
 
-export function ResumeReport({ resumeId }: { resumeId: string }) {
+export function ResumeReport({
+  optimizedResumeData,
+}: {
+  optimizedResumeData?: OptimizedResumeType;
+}) {
   const router = useRouter();
-  const { data, isFetching } = useQuery({
-    queryKey: ["optimised-resume", resumeId],
-    queryFn: async () => {
-      return getUserOptimziedResume(resumeId);
-    },
-    refetchOnWindowFocus: false,
-  });
+  // const { data, isFetching } = useQuery({
+  //   queryKey: ["optimised-resume", resumeId],
+  //   queryFn: async () => {
+  //     return getUserOptimziedResume(resumeId);
+  //   },
+  //   refetchOnWindowFocus: false,
+  // });
 
-  if (isFetching) return <ContainerWithSpinner />;
-  if (!data?.optimizedResume?.aiResponse)
+  // if (isFetching) return <ContainerWithSpinner />;
+  if (!optimizedResumeData?.aiResponse)
     return (
       <section>
         <p>Nothing to Analyze. Please provide a valid resume</p>
       </section>
     );
   const { optimization, grade, score, totalFixCount } =
-    data.optimizedResume.aiResponse;
+    optimizedResumeData.aiResponse;
 
   return (
     <section className="w-full max-h-full overflow-hidden">
@@ -48,7 +51,7 @@ export function ResumeReport({ resumeId }: { resumeId: string }) {
           <ArrowLeft />
           Back
         </Button>
-        <Badge variant={"outline"}>{data.optimizedResume.file.name}</Badge>
+        <Badge variant={"outline"}>{optimizedResumeData.file.name}</Badge>
       </div>
       <div className=" flex  gap-10 items-center mt-2 mb-25 sticky top-0">
         <div className=" flex  items-center gap-3 h-full">

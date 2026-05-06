@@ -22,7 +22,7 @@ export function DataTable() {
   const queryClient = useQueryClient();
 
   const { data, isFetching } = useQuery({
-    queryKey: ["optimzied-resumes"],
+    queryKey: ["optimized-resume"],
     queryFn: async () => {
       return await getUserOptimizedResumes();
     },
@@ -42,7 +42,7 @@ export function DataTable() {
       await queryClient.invalidateQueries({ queryKey: ["optimzied-resumes"] });
       const newOptiomizedResumes =
         queryClient.getQueryData<UserOptimizedResumeQueryType>([
-          "optimzied-resumes",
+          "optimized-resume",
         ]);
       toast.success(data?.message);
 
