@@ -10,7 +10,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-interface IGenericChartProps {
+export interface IGenericChartProps {
   data: any;
   ChartType: React.JSXElementConstructor<CategoricalChartProps>;
   chartTypeProps?: CategoricalChartProps;
