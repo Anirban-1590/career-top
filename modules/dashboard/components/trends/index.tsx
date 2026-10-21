@@ -3,8 +3,6 @@
 import { EmptyContent } from "../empty-content";
 import { ContainerWithSpinner } from "@/components/common/container-with-spinner";
 import { IndustryPreferenceDialog } from "./component/industry-preference-dialog";
-import { checkUserIndustryPreferenceTrends } from "@/action/trends";
-import { useQuery } from "@tanstack/react-query";
 
 import { Card } from "@/components/common/card";
 import { IndustryGrowthChart } from "./component/industry-growth-chart";
@@ -13,14 +11,10 @@ import { Badge } from "@/components/ui/badge";
 import { SalaryRangeChart } from "./component/salary-range-chart";
 import dayjs from "dayjs";
 import { Button } from "@/components/ui/button";
+import { useIndustryTrendsData } from "./hooks";
 
 export function IndustryTrend() {
-  const { isFetching, data: userPreference } = useQuery({
-    queryKey: ["industry-trend"],
-    queryFn: () => checkUserIndustryPreferenceTrends(),
-    refetchOnWindowFocus: false,
-    gcTime: 0,
-  });
+  const { isFetching, userPreference } = useIndustryTrendsData();
 
   if (isFetching) {
     return <ContainerWithSpinner />;

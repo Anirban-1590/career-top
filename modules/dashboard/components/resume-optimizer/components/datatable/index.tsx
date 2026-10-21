@@ -1,60 +1,37 @@
 "use client";
 
-import {
-  deleteOptimizedResume,
-  getUserOptimizedResumes,
-} from "@/action/optimizer";
 import { ContainerWithSpinner } from "@/components/common/container-with-spinner";
 import { Button } from "@/components/ui/button";
-import {
-  OptimizedResumeType,
-  UserOptimizedResumeQueryType,
-} from "@/types/optimizer";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { OptimizedResumeType } from "@/types/optimizer";
+
 import { ConfigProvider, Table, TableProps, theme } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
-import { toast } from "sonner";
 
-export function DataTable() {
+import { useDeleteOptimizedResume, useOptimizedResumesData } from "../../hooks";
+
+interface IDataTableProps {
+  disableDeleteButton?: boolean;
+  disablePagination?: boolean;
+}
+
+export function DataTable({
+  disableDeleteButton,
+  disablePagination,
+}: IDataTableProps) {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
-  const { data, isFetching } = useQuery({
-    queryKey: ["optimized-resume"],
-    queryFn: async () => {
-      return await getUserOptimizedResumes();
+  const { data, isFetching } = useOptimizedResumesData();
+  const { deleteOptimizeResumeMutate, isPending } = useDeleteOptimizedResume(
+    () => {
+      router.push("/dashboard/resume-optimizer/upload");
+      return;
     },
-    refetchOnWindowFocus: false,
-  });
+  );
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: async (resumeId: string) => {
-      return await deleteOptimizedResume(resumeId);
-    },
-    async onSettled(data) {
-      if (data?.error) {
-        toast.error(data.message);
-        return;
-      }
-
-      await queryClient.invalidateQueries({ queryKey: ["optimzied-resumes"] });
-      const newOptiomizedResumes =
-        queryClient.getQueryData<UserOptimizedResumeQueryType>([
-          "optimized-resume",
-        ]);
-      toast.success(data?.message);
-
-      if (!newOptiomizedResumes?.optimizedResumes?.length) {
-        router.push("/dashboard/resume-optimizer/upload");
-        return;
-      }
-    },
-  });
-
-  const columns: TableProps<OptimizedResumeType>["columns"] = useMemo(() => {
-    return [
+  const columns = useMemo(() => {
+    const baseColumns: TableProps<OptimizedResumeType>["columns"] = [
       {
         dataIndex: "file",
         key: "file",
@@ -79,7 +56,9 @@ export function DataTable() {
           return <>{dayjs(updatedAt).format("YYYY-MM-DD")}</>;
         },
       },
-      {
+    ];
+    if (!disableDeleteButton) {
+      baseColumns.push({
         key: "delete",
 
         render: (value, record) => {
@@ -89,7 +68,7 @@ export function DataTable() {
                 onClick={(ev) => {
                   ev.stopPropagation();
                   ev.preventDefault();
-                  mutate(record.id);
+                  deleteOptimizeResumeMutate(record.id);
                 }}
                 disabled={isPending}
                 size={"sm"}
@@ -105,9 +84,10 @@ export function DataTable() {
             </>
           );
         },
-      },
-    ];
-  }, [mutate, isPending]);
+      });
+    }
+    return baseColumns;
+  }, [deleteOptimizeResumeMutate, isPending, disableDeleteButton]);
   return (
     <ConfigProvider
       theme={{
