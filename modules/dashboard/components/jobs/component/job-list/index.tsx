@@ -63,7 +63,11 @@ export function JobList({
                     <img
                       width={50}
                       height={50}
-                      src={job.companyLogo ?? "/placeholder-company-logo.svg"}
+                      src={
+                        !job.companyLogo
+                          ? "/placeholder-company-logo.svg"
+                          : job.companyLogo
+                      }
                       alt={job.company ?? "company-logo"}
                       loading="lazy"
                     />

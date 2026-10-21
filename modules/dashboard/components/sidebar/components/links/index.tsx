@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BookOpen,
   BriefcaseBusiness,
   Building2,
   Home,
@@ -48,6 +49,12 @@ const sidebarLinks = [
     id: "tracker",
     url: "/dashboard/tracker",
     icon: Layout,
+  },
+  {
+    label: "Mock Interview",
+    id: "mock-interview-onboarding",
+    url: "/dashboard/mock-interview-onboarding",
+    icon: BookOpen,
   },
 ];
 export default function SidebarLinks() {

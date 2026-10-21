@@ -19,6 +19,7 @@ import { DropColumn } from "./components/drop-column";
 
 import { Button } from "@/components/ui/button";
 import { JobFunnel } from "@/modules/job-funnel";
+import { useJobTrackerData } from "./hook";
 
 const DNDTrackerWrapper = dynamic(
   () =>
@@ -36,18 +37,7 @@ export function JobTracker() {
   const [optimisticData, setOptimisticData] = useOptimistic(data);
   const [showJobFunnel, setShowJobFunnel] = useState(false);
 
-  const {
-    data: jobTrackerData,
-    error,
-    isLoading: isTrackerLoading,
-  } = useQuery({
-    queryKey: ["job-tracker-data"],
-    queryFn: async () => {
-      return await getJobTracker();
-    },
-    retry: 0,
-    refetchOnWindowFocus: false,
-  });
+  const { jobTrackerData, isTrackerLoading } = useJobTrackerData();
 
   const { mutate: addJobTracker, isPending: isTrackerGettingInitialized } =
     useMutation({

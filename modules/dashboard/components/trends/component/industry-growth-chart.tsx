@@ -1,16 +1,20 @@
-import { GenericChart } from "@/components/common/generic-chart";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import {
+  GenericChart,
+  IGenericChartProps,
+} from "@/components/common/generic-chart";
 import { AITrendsType } from "@/types/trends";
-import React from "react";
+
 import { Area, AreaChart, XAxis, YAxis } from "recharts";
 
 export function IndustryGrowthChart({
   data,
+  genericChartProps,
 }: {
   data: AITrendsType["growthRate"];
+  genericChartProps?: Pick<IGenericChartProps, "chartContainerProps">;
 }) {
   return (
-    <GenericChart ChartType={AreaChart} data={data}>
+    <GenericChart {...genericChartProps} ChartType={AreaChart} data={data}>
       <XAxis
         dataKey="month"
         tickLine={false}
